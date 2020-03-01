@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow: hidden;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.preview {
+  opacity: 0.5;
+  cursor: not-allowed
+}
+
+div.title {
+  display: block;
+  height: 15vh;
+}
+div.upgrades {
+  display: block;
+  overflow-y: scroll;
+  max-height: 85vh;
+  padding-bottom: 6vh;
+}
