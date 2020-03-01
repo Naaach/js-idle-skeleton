@@ -252,7 +252,9 @@ class Upgrade {
       if (this.active == false) this.$el.classList.remove('hidden')
       this.$el.classList.remove('preview')
       if (this.active == false) this.active = true;
-    } 
+    } else {
+      this.$el.classList.remove('preview')
+    }
 
     if ((points >= this.showAt) && (points < this.price)) {
       this.$el.classList.remove('hidden')
