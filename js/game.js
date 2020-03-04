@@ -182,7 +182,7 @@ class Upgrade {
       <p class="${this.id} total">Total ${this.name}s: <span class="total">${this.amount}</span></p>
       <p class ="${this.id} price">Price: <span class="price">${this.price}</span></p>
       <p class="${this.id} pointsPerSecond">Points per second: <span class="pointsPerSecond">${this.pointsPerSecond}</span></p>
-      <p class="${this.id} buy">Buy new ${this.name} <button class="buy" disabled>Buy</button></p>
+      <p class="${this.id} buy"> <button class="buy" disabled>Buy new ${this.name} </button> </p>
       <hr><hr>
     `;
 
@@ -263,21 +263,22 @@ class Upgrade {
     }
   }
   checkToShow(points) {
-    if (points >= this.price) {
-      if (this.active == false) this.$el.classList.remove('hidden')
-      this.$el.classList.remove('preview')
-      if (this.active == false) this.active = true;
-    } else {
-      this.$el.classList.remove('preview')
+    // Ocultar
+    if (points < this.showAt) {
+      if (this.active == false) this.$el.classList.add('hidden')
     }
 
+    // Mostrar en opcidad
     if ((points >= this.showAt) && (points < this.price)) {
       this.$el.classList.remove('hidden')
       this.$el.classList.add('preview')
     }
 
-    if (points < this.showAt) {
-      if (this.active == false) this.$el.classList.add('hidden')
+    // Mostrar con opacidad o mantener
+    if (points >= this.price) {
+      if (this.active == false) this.$el.classList.remove('hidden')
+      this.$el.classList.remove('preview')
+      if (this.active == false) this.active = true;
     }
   }
   initListeners() {

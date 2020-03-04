@@ -4,8 +4,8 @@ window.addEventListener('load', documentLoadEvent => {
   const game = new Game();
 
   game
-    .addEntity(new Upgrade('autopointer',    10,          0,          1.3,     1.1))
-    .addEntity(new Upgrade('MareNostrum',    250,         7,          5,       1.15))
+    .addEntity(new Upgrade('autopointer',    10,          0,          1.3,     1.02))
+    .addEntity(new Upgrade('MareNostrum',    250,         7,          5,       1.1))
     .addEntity(new Upgrade('K Computer',     1500,        200,        12,      1.2))
     .addEntity(new Upgrade('Oakforest-PACS', 10000,       1400,       48,      1.3))
     .addEntity(new Upgrade('Cori',           50000,       9000,       115,     1.32))
