@@ -8,7 +8,7 @@ class Game {
     this.preloadEntities = [];
     this.entities = [];
     this.$viewPoints = null;
-    this.updateDivisor = 5;
+    this.updateDivisor = 50;
 
     this.customEvents = {
       // updatePoints
