@@ -10,10 +10,6 @@ class Game {
     this.$viewPoints = null;
     this.updateDivisor = 50;
 
-    this.customEvents = {
-      // updatePoints
-    };
-
     this.prepareGame();
   }
 
@@ -28,19 +24,19 @@ class Game {
     this.update()
   }
   saveData() {
-      const toSave = {
-        points: this.points,
-        pointsPerSecond: this.pointsPerSecond ,
-        pointsPerClick: this.pointsPerClick,
-        entities: this.entities.map(entity => entity.getDataToSave())
-      }
+    const toSave = {
+      points: this.points,
+      pointsPerSecond: this.pointsPerSecond,
+      pointsPerClick: this.pointsPerClick,
+      entities: this.entities.map(entity => entity.getDataToSave())
+    }
 
     const encoded = btoa(JSON.stringify(toSave))
     localStorage.setItem('saveData', encoded)
   }
   loadSaveGame() {
     const saveData = localStorage.getItem('saveData')
-    
+
     if (saveData) {
       const decoded = JSON.parse(atob(saveData))
 
@@ -52,7 +48,7 @@ class Game {
       this.entities.forEach((entity, index) => {
         this.entities[index] = new Upgrade().createFromSaveData(entity)
       })
-    } 
+    }
   }
   update() {
     this.intervalID = setInterval(() => {
@@ -75,14 +71,20 @@ class Game {
     this.points = parseFloat((this.points + points).toFixed(2))
     this.updateView()
 
-    // notifi the cahnge
-    document.dispatchEvent(this.customEvents.updatePoints)
+    // notify the cahnge
+    utils.eventEmiter.triggerEvent(
+      utils.eventName.updatePoints,
+      { points: () => this.points }
+    )
   }
   lessPoints(plessPoints) {
     this.points = parseFloat((this.points - plessPoints).toFixed(2))
 
     // notifi the cahnge
-    document.dispatchEvent(this.customEvents.updatePoints)
+    utils.eventEmiter.triggerEvent(
+      utils.eventName.updatePoints,
+      { points: ()  => this.points }
+    )
   }
   pointsOnClick() {
     document.querySelector('#generate_point')
@@ -101,16 +103,20 @@ class Game {
       const index = this.entities.push(entity)
       // init the entity
       this.entities[index - 1].init()
-    } 
+    }
 
     return this;
   }
   createCustomEvents() {
-    this.customEvents.updatePoints = new CustomEvent('updatePoints', {
-      detail: {
-        points: () => this.points
-      }
-    })
+    // Update Points
+    utils.eventEmiter.createEvent(
+      utils.eventName.updatePoints
+    )
+
+    // Buy event
+    utils.eventEmiter.createEvent(
+      utils.eventName.buyUpgrade
+    )
   }
   initListeners() {
     // save data on close
@@ -120,9 +126,10 @@ class Game {
     })
 
     // Buy upgrade
-    document.addEventListener('buyUpgrade', event => {      
-      this.lessPoints(event.detail.pointsToLess())
-    })
+    utils.eventEmiter.addHandler(
+      utils.eventName.buyUpgrade,
+      event => this.lessPoints(event.pointsToLess())
+    )
   }
 }
 
@@ -138,14 +145,11 @@ class Upgrade {
     this.pointsPerSecond = 0;
     this.incrementalRatio = incrementalRatio;
     this.active = false;
-    this.customEvents = {
-      // buyUpgrade
-    };
   }
   createFromSaveData(toCast) {
     Object.keys(toCast).forEach(key => {
       this[key] = toCast[key]
-      
+
     })
     this.init()
 
@@ -197,19 +201,30 @@ class Upgrade {
     } else {
       $button.addEventListener('click', event => this.buyEvent(event))
     }
+
+    // Update Points
+    utils.eventEmiter.createEvent(
+      utils.eventName.updatePoints
+    )
+
+    // Buy event
+    utils.eventEmiter.createEvent(
+      utils.eventName.buyUpgrade
+    )
   }
   buyEvent(evnet) {
     if (event) event.preventDefault()
 
     // notify the buy
-    document.dispatchEvent(new CustomEvent('buyUpgrade', {
-      detail: {
+    utils.eventEmiter.triggerEvent(
+      utils.eventName.buyUpgrade,
+      {
         upgradeName: () => this.name,
         upgradeId: () => this.id,
         pointsToLess: () => this.price
       }
-    }))
 
+    )
     this.amount += 1
     this.price = parseInt(this.price * this.incrementalRatio)
     this.pointsPerSecond = parseFloat((this.amount * this.pointsPerOne).toFixed(2))
@@ -247,8 +262,8 @@ class Upgrade {
       this.$el.querySelector('button').setAttribute('disabled', true)
     }
   }
-  checkToShow(points) {    
-    if(points >= this.price) {
+  checkToShow(points) {
+    if (points >= this.price) {
       if (this.active == false) this.$el.classList.remove('hidden')
       this.$el.classList.remove('preview')
       if (this.active == false) this.active = true;
@@ -261,15 +276,19 @@ class Upgrade {
       this.$el.classList.add('preview')
     }
 
-    if (points < this.showAt) {      
+    if (points < this.showAt) {
       if (this.active == false) this.$el.classList.add('hidden')
     }
   }
   initListeners() {
-    document.addEventListener('updatePoints', event => {
-      this.checkAvailabletoBuy(event.detail.points())
-      this.checkToShow(event.detail.points())
-    })
+    //  On update points
+    utils.eventEmiter.addHandler(
+      utils.eventName.updatePoints,
+      event => {
+        this.checkAvailabletoBuy(event.points())
+        this.checkToShow(event.points())
+      }
+    )
   }
   generateSnowflake() {
     return `upgrade_${parseInt((new Date().getTime() * Math.random()))}`

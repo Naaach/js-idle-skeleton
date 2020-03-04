@@ -46,10 +46,11 @@ class EventEmiter {
 }
 
 
-
-
-
-
+///////////////////////////////////////////////////////////////////
 const utils = ({
-  eventEmiter: new EventEmiter()
+  eventEmiter: new EventEmiter(),
+  eventName: {
+    updatePoints: 'UPDATE_POINTS',
+    buyUpgrade: 'BUY_UPGRADE'
+  }
 })
