@@ -1,2 +1,2 @@
 # js-idle-skeleton
-skeleton for an idle, clicker gams in js
+skeleton for an idle, clicker games in js
